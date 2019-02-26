@@ -143,8 +143,8 @@ function moveSelector(e){
     //Team WHITE available moves
     /////////////////////////////
     if (turn_white && e.target.classList.contains('white-checker')){
-        var x = current_pos_white[checker_number].x;
-            y = current_pos_white[checker_number].y,
+        var current_x = current_pos_white[checker_number].x;
+            current_y = current_pos_white[checker_number].y,
             coords = 0,
             new_x = 0,
             new_y = 0,
@@ -153,6 +153,7 @@ function moveSelector(e){
 
         for (var i = 0; i < white_checker.length; i++){
             white_checker[i].classList.remove('active-checker');
+            black_checker[i].classList.remove('kill-checker');
             white_checker[i].classList.remove('kill-checker');
         };
 
@@ -165,11 +166,11 @@ function moveSelector(e){
         }
 
         //Available moves to the left
-        new_x = x - 1;
-        new_y = y - 1;
+        new_x = current_x - 1;
+        new_y = current_y - 1;
         coords = new_x.toString() + new_y.toString();
 
-        if (moveAllowed(new_x, new_y,)){
+        if (!positionChecker(new_x, new_y, 'white') && !positionChecker(new_x, new_y, 'black')){
             for (var i = 0; i < black_cell.length; i++){
                 if (black_cell[i].innerText == coords) {
                     black_cell[i].classList.add('active-cell')
@@ -178,11 +179,11 @@ function moveSelector(e){
         }
 
         //Available moves to the right
-        new_x = x + 1;
-        new_y = y - 1;
+        new_x = current_x + 1;
+        new_y = current_y - 1;
         coords = new_x.toString() + new_y.toString();
 
-        if (moveAllowed(new_x, new_y,)){
+        if (!positionChecker(new_x, new_y, 'white') && !positionChecker(new_x, new_y, 'black')){
             for (var i = 0; i < black_cell.length; i++){
                 if (black_cell[i].innerText == coords) {
                     black_cell[i].classList.add('active-cell')
@@ -190,46 +191,26 @@ function moveSelector(e){
             }
         }
 
-        //Available kills to the left
-        kill_x = x - 1;
-        kill_y = y - 1;
-        new_x = x - 2;
-        new_y = y - 2;
-        coords = new_x.toString() + new_y.toString();
 
-        if (killAllowedBlack(kill_x, kill_y, new_x, new_y,)){
-            for (var i = 0; i < current_pos_black.length; i++) {
-                if (kill_x == current_pos_black[i].x && kill_y == current_pos_black[i].y ){
-                    black_checker[i].classList.add('kill-checker');
+        // //Available kills
+        if (killAllowedBlack(current_x, current_y)) {
+            console.log(kill_object);
+
+            for (var i = 0; i < black_cell.length; i++){
+                for (var n = 0; n < kill_object.length; n++){
+                    if (black_cell[i].innerText == kill_object[n].move_to_coords){
+                        black_cell[i].classList.add('active-cell');
+                    }
                 }
             }
-            for (var i = 0; i < black_cell.length; i++){
-                if (black_cell[i].innerText == coords) {
-                    black_cell[i].classList.add('active-cell')
+            for (var i = 0; i < current_pos_black.length; i++){
+                for (var n = 0; n < kill_object.length; n++){
+                    if ( current_pos_black[i].x == kill_object[n].x && current_pos_black[i].y == kill_object[n].y){
+                        black_checker[i].classList.add('kill-checker');
+                    }
                 }
             }
         }
-
-        //Available kills to the right
-        kill_x = x + 1;
-        kill_y = y - 1;
-        new_x = x + 2;
-        new_y = y - 2;
-        coords = new_x.toString() + new_y.toString();
-
-        if (killAllowedBlack(kill_x, kill_y, new_x, new_y,)){
-            for (var i = 0; i < current_pos_black.length; i++) {
-                if(kill_x == current_pos_black[i].x && kill_y == current_pos_black[i].y ){
-                    black_checker[i].classList.add('kill-checker');
-                }
-            }
-            for (var i = 0; i < black_cell.length; i++){
-                if (black_cell[i].innerText == coords) {
-                    black_cell[i].classList.add('active-cell')
-                }
-            }
-        }
-
 
     }
 
@@ -238,14 +219,15 @@ function moveSelector(e){
    //Team BLACK available moves
    /////////////////////////////
     if (turn_black && e.target.classList.contains('black-checker')){
-        var x = current_pos_black[checker_number].x;
-            y = current_pos_black[checker_number].y,
+        var current_x = current_pos_black[checker_number].x;
+            current_y = current_pos_black[checker_number].y,
             coords = 0,
             new_x = 0,
             new_y = 0;
 
         for (var i = 0; i < black_checker.length; i++){
             black_checker[i].classList.remove('active-checker');
+            white_checker[i].classList.remove('kill-checker');
             black_checker[i].classList.remove('kill-checker');
         };
 
@@ -258,11 +240,11 @@ function moveSelector(e){
         }
 
         //Available moves to the left
-        new_x = x - 1;
-        new_y = y + 1;
+        new_x = current_x - 1;
+        new_y = current_y + 1;
         coords = new_x.toString() + new_y.toString();
 
-        if (moveAllowed(new_x, new_y,)){
+        if (!positionChecker(new_x, new_y, 'white') && !positionChecker(new_x, new_y, 'black')){
             for (var i = 0; i < black_cell.length; i++){
                 if (black_cell[i].innerText == coords) {
                     black_cell[i].classList.add('active-cell')
@@ -271,11 +253,11 @@ function moveSelector(e){
         }
 
         //Available moves to the right
-        new_x = x + 1;
-        new_y = y + 1;
+        new_x = current_x + 1;
+        new_y = current_y + 1;
         coords = new_x.toString() + new_y.toString();
 
-        if (moveAllowed(new_x, new_y,)){
+        if (!positionChecker(new_x, new_y, 'white') && !positionChecker(new_x, new_y, 'black')){
             for (var i = 0; i < black_cell.length; i++){
                 if (black_cell[i].innerText == coords) {
                     black_cell[i].classList.add('active-cell')
@@ -283,115 +265,116 @@ function moveSelector(e){
             }
         }
 
-        //Available kills to the left
-        kill_x = x - 1;
-        kill_y = y + 1;
-        new_x = x - 2;
-        new_y = y + 2;
-        coords = new_x.toString() + new_y.toString();
-
-        if (killAllowedWhite(kill_x, kill_y, new_x, new_y,)){
-            for (var i = 0; i < current_pos_white.length; i++) {
-                if (kill_x == current_pos_white[i].x && kill_y == current_pos_white[i].y ){
-                    white_checker[i].classList.add('kill-checker');
+        //Available kills
+        if (killAllowedWhite(current_x, current_y)) {
+            console.log(kill_object);
+            for (var i = 0; i < black_cell.length; i++){
+                for (var n = 0; n < kill_object.length; n++){
+                    if (black_cell[i].innerText == kill_object[n].move_to_coords){
+                        black_cell[i].classList.add('active-cell');
+                    }
                 }
             }
-            for (var i = 0; i < black_cell.length; i++){
-                if (black_cell[i].innerText == coords) {
-                    black_cell[i].classList.add('active-cell')
+            for (var i = 0; i < current_pos_white.length; i++){
+                for (var n = 0; n < kill_object.length; n++){
+                    if ( current_pos_white[i].x == kill_object[n].x && current_pos_white[i].y == kill_object[n].y){
+                        white_checker[i].classList.add('kill-checker');
+                    }
                 }
             }
         }
 
-        //Available kills to the right
-        kill_x = x + 1;
-        kill_y = y + 1;
-        new_x = x + 2;
-        new_y = y + 2;
-        coords = new_x.toString() + new_y.toString();
-
-        if (killAllowedWhite(kill_x, kill_y, new_x, new_y,)){
-            for (var i = 0; i < current_pos_white.length; i++) {
-                if (kill_x == current_pos_white[i].x && kill_y == current_pos_white[i].y ){
-                    white_checker[i].classList.add('kill-checker');
-                }
-            }
-            for (var i = 0; i < black_cell.length; i++){
-                if (black_cell[i].innerText == coords) {
-                    black_cell[i].classList.add('active-cell')
-                }
+    }
+}
+//Function position checker
+function positionChecker(x, y, team_color){
+    if ( team_color === 'white'){
+        for (var i = 0; i < current_pos_white.length; i++){
+            if (current_pos_white[i].x === x && current_pos_white[i].y === y){
+                return true;
             }
         }
+        return false;
+    }
+    if ( team_color === 'black'){
+        for (var i = 0; i < current_pos_white.length; i++){
+            if (current_pos_black[i].x === x && current_pos_black[i].y === y){
+                return true;
+            }
+        }
+        return false;
     }
 }
 
-//Function to find moves available
-function moveAllowed(x, y){
-    var move_alowed = true;
-
-    for (var i = 0; i < current_pos_white.length; i++){
-        if (x == current_pos_white[i].x && y == current_pos_white[i].y ) {
-            move_alowed = false;
-            return move_alowed;
-        }
-        if (x == current_pos_black[i].x && y == current_pos_black[i].y ) {
-            move_alowed = false;
-            return move_alowed;
-        }
-    }
-    return move_alowed;
-}
 
 //Function to find available kills - (to kill BLACK checkers)
-function killAllowedBlack(kill_x, kill_y, new_x, new_y){
-    var kill_allowed = false;
-
-    for (var i = 0; i < current_pos_black.length; i++) {
-        if (kill_x == current_pos_black[i].x && kill_y == current_pos_black[i].y ) {
-            for (var n = 0; n < current_pos_black.length; n++) {
-                if (new_x == current_pos_black[n].x && new_y == current_pos_black[n].y ) {
-                    kill_allowed = false;
-                    return kill_allowed;
-                } else {
-                    kill_allowed = true;
-                }
-
-                if (new_x == current_pos_white[n].x && new_y == current_pos_white[n].y ) {
-                    kill_allowed = false;
-                    return kill_allowed;
-                } else {
-                    kill_allowed = true;
-                }
-            }
-        }
+function killAllowedBlack (x,y){
+    kill_object.length = 0;
+    for (var i = 0; i < 3; i++){
+        if (positionChecker(x + 1, y - 1, 'black') && x + 2 <= 7 && y - 2 >= 0 ){
+            if (!positionChecker(x + 2, y - 2, 'white') && !positionChecker(x + 2, y - 2, 'black')) {
+                kill_object.push(
+                {
+                    x: x + 1,
+                    y: y - 1,
+                    move_to_coords: (x + 2).toString() + (y - 2).toString()
+                });
+                x += 2;
+                y -= 2;
+            };
+        };
+        if (positionChecker(x - 1, y - 1, 'black') && x - 2 >= 0 && y - 2 >= 0){
+            if (!positionChecker(x - 2, y - 2, 'white') && !positionChecker(x - 2, y - 2, 'black')) {
+                kill_object.push(
+                {
+                    x: x - 1,
+                    y: y - 1,
+                    move_to_coords: (x - 2).toString() + (y - 2).toString()
+                });
+                x = x - 2;
+                y = y - 2;
+            };
+        };
+    };
+    if (kill_object.length > 0){
+        return true;
     }
-    return kill_allowed;
 }
 
 //Function to find available kills - (to kill WHITE checkers)
-function killAllowedWhite(kill_x, kill_y, new_x, new_y){
-    var kill_allowed = false;
+function killAllowedWhite (x,y){
+    kill_object.length = 0;
+    for( var i = 1; i <= 3; i++){
+        if (positionChecker(x + 1, y + 1, 'white') && x + 2 <= 7 && y + 2 <= 7) {
+            if (!positionChecker(x + 2, y + 2, 'white') && !positionChecker(x + 2, y + 2, 'black')) {
+                kill_object.push(
+                {
+                    x: x + 1,
+                    y: y + 1,
+                    move_to_coords: (x + 2).toString() + (y + 2).toString()
+                });
+                x += 2;
+                y += 2;
+            };
+        };
+        if (positionChecker(x - 1, y + 1, 'white') && x - 2 >= 0 && y + 2 <= 7) {
+            if (!positionChecker(x - 2, y + 2, 'white') && !positionChecker(x - 2, y + 2, 'black')) {
+                kill_object.push(
+                {
+                    x: x - 1,
+                    y: y + 1,
+                    move_to_coords: (x - 2).toString() + (y + 2).toString()
+                });
+                x -= 2;
+                y += 2;
+            };
+        };
+    };
+    if (kill_object.length > 0){
+        return true;
+    };
+};
 
-    for (var i = 0; i < current_pos_white.length; i++) {
-        if (kill_x == current_pos_white[i].x && kill_y == current_pos_white[i].y ) {
-            for (var n = 0; n < current_pos_white.length; n++) {
-                if (new_x == current_pos_white[n].x && new_y == current_pos_white[n].y ) {
-                    kill_allowed = false;
-                    return kill_allowed;
-                } else {
-                    kill_allowed = true;
-                }
-                if (new_x == current_pos_black[n].x && new_y == current_pos_black[n].y ) {
-                    kill_allowed = false;
-                    return kill_allowed;
-                } else {
-                    kill_allowed = true;
-                }
-            }
-        }
-    }
-    return kill_allowed;
-}
 
 
 ////////////////////////////////////////////////////////
@@ -406,36 +389,25 @@ function makingMove(e){
         active_checker = document.querySelector('.active-checker'),
         white_checker = document.querySelectorAll('.white-checker'),
         black_checker = document.querySelectorAll('.black-checker'),
+        kill_checker = document.querySelectorAll('.kill-checker'),
         cell = document.querySelectorAll('.cell'),
-        kill = false;
         cheker_number = active_checker.innerText;
 
-    for (var i = 0; i < white_checker.length; i++){
-        if (black_checker[i].classList.contains('kill-checker')) {
-            var kill_checker = document.querySelector('.kill-checker'),
-                kill_checker_nr = parseInt(kill_checker.innerText),
-                x_home = home_pos_black[kill_checker_nr].x,
-                y_home = home_pos_black[kill_checker_nr].y;
-                kill = true;
-        }
-        if (white_checker[i].classList.contains('kill-checker')) {
-            var kill_checker = document.querySelector('.kill-checker'),
-                kill_checker_nr = parseInt(kill_checker.innerText),
-                x_home = home_pos_white[kill_checker_nr].x,
-                y_home = home_pos_white[kill_checker_nr].y;
-                kill = true;
-        }
-    }
 
     //New position of the checker - Team WHITE
     if (active_checker.classList.contains('white-checker')){
 
         active_checker.style = `left: calc(12.5% * ${x}); top: calc(12.5% * ${y}); transition: 0.5s;`;
 
-        if (kill){
-            kill_checker.style = `left: calc(12.5% * ${x_home}); top: calc(12.5% * ${y_home}); transition: 0.5s;`;
-            current_pos_black[kill_checker_nr].x = '';
-            current_pos_black[kill_checker_nr].y = '';
+        if (kill_checker.length > 0){
+            for (var i = 0; i < kill_checker.length; i++){
+                var kill_checker_nr = parseInt(kill_checker[i].innerText);
+                    x_home = home_pos_black[kill_checker_nr].x;
+                    y_home = home_pos_black[kill_checker_nr].y;
+                    kill_checker[i].style = `left: calc(12.5% * ${x_home}); top: calc(12.5% * ${y_home}); transition: 1.5s;`;
+                    current_pos_black[kill_checker_nr].x = '';
+                    current_pos_black[kill_checker_nr].y = '';
+            }
         }
 
 
@@ -445,7 +417,6 @@ function makingMove(e){
         turn_white = false;
         turn_black = true;
 
-        console.log(current_pos_black);
         for (var i = 0; i < white_checker.length; i++ ) {
             white_checker[i].classList.remove('active-checker');
         }
@@ -469,10 +440,15 @@ function makingMove(e){
 
         active_checker.style = `left: calc(12.5% * ${x}); top: calc(12.5% * ${y}); transition: 0.5s;`;
 
-        if (kill){
-            kill_checker.style = `left: calc(12.5% * ${x_home}); top: calc(12.5% * ${y_home}); transition: 0.5s;`;
-            current_pos_white[kill_checker_nr].x = '';
-            current_pos_white[kill_checker_nr].y = '';
+        if (kill_checker.length > 0){
+            for (var i = 0; i < kill_checker.length; i++){
+                var kill_checker_nr = parseInt(kill_checker[i].innerText);
+                    x_home = home_pos_white[kill_checker_nr].x;
+                    y_home = home_pos_white[kill_checker_nr].y;
+                    kill_checker[i].style = `left: calc(12.5% * ${x_home}); top: calc(12.5% * ${y_home}); transition: 1.5s;`;
+                    current_pos_white[kill_checker_nr].x = '';
+                    current_pos_white[kill_checker_nr].y = '';
+            }
         }
 
         current_pos_black[cheker_number].x = parseInt(x);
@@ -497,7 +473,5 @@ function makingMove(e){
 
         document.querySelector('.game').classList.remove('reverse')
     }
-
-
 
 }

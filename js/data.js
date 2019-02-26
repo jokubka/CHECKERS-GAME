@@ -5,6 +5,7 @@ var width = 8,
     height = 8,
     turn_white = true,
     turn_black = false,
+    kill_object = [],
     start_pos_black = [
         {
             x: 1,
