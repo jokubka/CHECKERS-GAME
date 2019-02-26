@@ -1,3 +1,6 @@
+'use-strict'
+
+
 var width = 8,
     height = 8,
     turn_white = true,

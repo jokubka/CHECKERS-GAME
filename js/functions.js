@@ -1,3 +1,5 @@
+'use-strict'
+
 //////////////////////////////////////////////
 //
 //Board rendering function
@@ -151,6 +153,7 @@ function moveSelector(e){
 
         for (var i = 0; i < white_checker.length; i++){
             white_checker[i].classList.remove('active-checker');
+            white_checker[i].classList.remove('kill-checker');
         };
 
         for (var i = 0; i < black_cell.length; i++){
@@ -195,6 +198,11 @@ function moveSelector(e){
         coords = new_x.toString() + new_y.toString();
 
         if (killAllowedBlack(kill_x, kill_y, new_x, new_y,)){
+            for (var i = 0; i < current_pos_black.length; i++) {
+                if (kill_x == current_pos_black[i].x && kill_y == current_pos_black[i].y ){
+                    black_checker[i].classList.add('kill-checker');
+                }
+            }
             for (var i = 0; i < black_cell.length; i++){
                 if (black_cell[i].innerText == coords) {
                     black_cell[i].classList.add('active-cell')
@@ -210,6 +218,11 @@ function moveSelector(e){
         coords = new_x.toString() + new_y.toString();
 
         if (killAllowedBlack(kill_x, kill_y, new_x, new_y,)){
+            for (var i = 0; i < current_pos_black.length; i++) {
+                if(kill_x == current_pos_black[i].x && kill_y == current_pos_black[i].y ){
+                    black_checker[i].classList.add('kill-checker');
+                }
+            }
             for (var i = 0; i < black_cell.length; i++){
                 if (black_cell[i].innerText == coords) {
                     black_cell[i].classList.add('active-cell')
@@ -233,6 +246,7 @@ function moveSelector(e){
 
         for (var i = 0; i < black_checker.length; i++){
             black_checker[i].classList.remove('active-checker');
+            black_checker[i].classList.remove('kill-checker');
         };
 
         for (var i = 0; i < black_cell.length; i++){
@@ -277,6 +291,11 @@ function moveSelector(e){
         coords = new_x.toString() + new_y.toString();
 
         if (killAllowedWhite(kill_x, kill_y, new_x, new_y,)){
+            for (var i = 0; i < current_pos_white.length; i++) {
+                if (kill_x == current_pos_white[i].x && kill_y == current_pos_white[i].y ){
+                    white_checker[i].classList.add('kill-checker');
+                }
+            }
             for (var i = 0; i < black_cell.length; i++){
                 if (black_cell[i].innerText == coords) {
                     black_cell[i].classList.add('active-cell')
@@ -292,6 +311,11 @@ function moveSelector(e){
         coords = new_x.toString() + new_y.toString();
 
         if (killAllowedWhite(kill_x, kill_y, new_x, new_y,)){
+            for (var i = 0; i < current_pos_white.length; i++) {
+                if (kill_x == current_pos_white[i].x && kill_y == current_pos_white[i].y ){
+                    white_checker[i].classList.add('kill-checker');
+                }
+            }
             for (var i = 0; i < black_cell.length; i++){
                 if (black_cell[i].innerText == coords) {
                     black_cell[i].classList.add('active-cell')
@@ -383,21 +407,45 @@ function makingMove(e){
         white_checker = document.querySelectorAll('.white-checker'),
         black_checker = document.querySelectorAll('.black-checker'),
         cell = document.querySelectorAll('.cell'),
+        kill = false;
         cheker_number = active_checker.innerText;
 
-        console.log(cheker_number);
-
+    for (var i = 0; i < white_checker.length; i++){
+        if (black_checker[i].classList.contains('kill-checker')) {
+            var kill_checker = document.querySelector('.kill-checker'),
+                kill_checker_nr = parseInt(kill_checker.innerText),
+                x_home = home_pos_black[kill_checker_nr].x,
+                y_home = home_pos_black[kill_checker_nr].y;
+                kill = true;
+        }
+        if (white_checker[i].classList.contains('kill-checker')) {
+            var kill_checker = document.querySelector('.kill-checker'),
+                kill_checker_nr = parseInt(kill_checker.innerText),
+                x_home = home_pos_white[kill_checker_nr].x,
+                y_home = home_pos_white[kill_checker_nr].y;
+                kill = true;
+        }
+    }
 
     //New position of the checker - Team WHITE
     if (active_checker.classList.contains('white-checker')){
 
-        active_checker.style = `left: calc(12.5% * ${x}); top: calc(12.5% * ${y}); transition: 0.5s;`
+        active_checker.style = `left: calc(12.5% * ${x}); top: calc(12.5% * ${y}); transition: 0.5s;`;
 
-        current_pos_white[cheker_number].x = x;
-        current_pos_white[cheker_number].y = y;
+        if (kill){
+            kill_checker.style = `left: calc(12.5% * ${x_home}); top: calc(12.5% * ${y_home}); transition: 0.5s;`;
+            current_pos_black[kill_checker_nr].x = '';
+            current_pos_black[kill_checker_nr].y = '';
+        }
+
+
+
+        current_pos_white[cheker_number].x = parseInt(x);
+        current_pos_white[cheker_number].y = parseInt(y);
         turn_white = false;
         turn_black = true;
 
+        console.log(current_pos_black);
         for (var i = 0; i < white_checker.length; i++ ) {
             white_checker[i].classList.remove('active-checker');
         }
@@ -419,10 +467,16 @@ function makingMove(e){
     //New position of the checker - Team BLACK
     if (active_checker.classList.contains('black-checker')){
 
-        active_checker.style = `left: calc(12.5% * ${x}); top: calc(12.5% * ${y}); transition: 0.5s;`
+        active_checker.style = `left: calc(12.5% * ${x}); top: calc(12.5% * ${y}); transition: 0.5s;`;
 
-        current_pos_black[cheker_number].x = x;
-        current_pos_black[cheker_number].y = y;
+        if (kill){
+            kill_checker.style = `left: calc(12.5% * ${x_home}); top: calc(12.5% * ${y_home}); transition: 0.5s;`;
+            current_pos_white[kill_checker_nr].x = '';
+            current_pos_white[kill_checker_nr].y = '';
+        }
+
+        current_pos_black[cheker_number].x = parseInt(x);
+        current_pos_black[cheker_number].y = parseInt(y);
         turn_white = true;
         turn_black = false;
 

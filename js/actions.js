@@ -1,3 +1,6 @@
+'use-strict'
+
+
 //Board rendering
 document.querySelector('.chess-board').innerHTML = generateBoard(width, height);
 document.querySelectorAll('.letters')[0].innerHTML = generateLetters(width);
