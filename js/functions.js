@@ -1,4 +1,4 @@
-'use-strict'
+'use strict';
 
 //////////////////////////////////////////////
 //
@@ -102,7 +102,7 @@ function generateCheckers(){
 //////////////////////////////////////////
 function generateStartPosition(){
     var x = 0,
-        y = 0;
+        y = 0,
         white_checker = document.querySelectorAll('.white-checker'),
         black_checker = document.querySelectorAll('.black-checker');
 
@@ -111,7 +111,8 @@ function generateStartPosition(){
     for (var i = 0; i < white_checker.length; i++) {
         x = start_pos_white[i].x;
         y = start_pos_white[i].y;
-
+console.log(i, x, y, ' white');
+console.log("-------------");
         white_checker[i].style = `left: calc(12.5% * ${x}); top: calc(12.5% * ${y}); transition: 0.5s;`;
     }
 
@@ -119,8 +120,10 @@ function generateStartPosition(){
     for (var i = 0; i < black_checker.length; i++) {
         x = start_pos_black[i].x;
         y = start_pos_black[i].y;
+        console.log(i, x, y, ' black');
+        console.log("-------------");
 
-        black_checker[i].style = `left: calc(12.5% * ${x}); top: calc(12.5% * ${y}); transition: 0.5s;`
+        black_checker[i].style = `left: calc(12.5% * ${x}); top: calc(12.5% * ${y}); transition: 0.5s;`;
     }
 
     document.querySelector('.btn-game').innerHTML = 'new game';
@@ -136,6 +139,7 @@ function generateStartPosition(){
 function moveSelector(e){
     var white_checker = document.querySelectorAll('.white-checker'),
         black_checker = document.querySelectorAll('.black-checker'),
+        active_checker = '',
         black_cell = document.querySelectorAll('.black'),
         checker_number = e.target.innerText;
 
@@ -143,7 +147,7 @@ function moveSelector(e){
     //Team WHITE available moves
     /////////////////////////////
     if (turn_white && e.target.classList.contains('white-checker')){
-        var current_x = current_pos_white[checker_number].x;
+        var current_x = current_pos_white[checker_number].x,
             current_y = current_pos_white[checker_number].y,
             coords = 0,
             new_x = 0,
@@ -164,6 +168,28 @@ function moveSelector(e){
         if (e.target.classList.contains('white-checker')){
             e.target.classList.add('active-checker');
         }
+
+        active_checker = document.querySelector('.active-checker');
+
+        ///////////////////////
+        //Queen available moves
+        ///////////////////////
+        if (active_checker.classList.contains('white-queen')){
+            //Queen up and left
+            queenUpLeft(current_x, current_y, black_cell);
+
+            //Queen up and right
+            queenUpRight(current_x, current_y, black_cell);
+
+            //Queen down and left
+            queenDownLeft(current_x, current_y, black_cell);
+
+            //Queen down and right
+            queenDownRight(current_x, current_y, black_cell);
+
+        }
+
+
 
         //Available moves to the left
         new_x = current_x - 1;
@@ -239,6 +265,26 @@ function moveSelector(e){
             e.target.classList.add('active-checker');
         }
 
+        active_checker = document.querySelector('.active-checker');
+
+        ///////////////////////
+        //Queen available moves
+        ///////////////////////
+        if (active_checker.classList.contains('black-queen')){
+            //Queen up and left
+            queenUpLeft(current_x, current_y, black_cell);
+
+            //Queen up and right
+            queenUpRight(current_x, current_y, black_cell);
+
+            //Queen down and left
+            queenDownLeft(current_x, current_y, black_cell);
+
+            //Queen down and right
+            queenDownRight(current_x, current_y, black_cell);
+
+        }
+
         //Available moves to the left
         new_x = current_x - 1;
         new_y = current_y + 1;
@@ -303,6 +349,89 @@ function positionChecker(x, y, team_color){
             }
         }
         return false;
+    }
+}
+////////////////////////////////////
+//Functions for queen positions
+///////////////////////////////////
+function queenUpLeft(x, y, black_cell){
+    for (var i = 0; i <= 8; i++){
+        if (x > 0 && y > 0) {
+            x--;
+            y--;
+            if(!positionChecker(x, y, 'white') && !positionChecker(x, y, 'black')){
+                for (var n = 0; n < black_cell.length; n++){
+                    if (black_cell[n].innerText == x.toString() + y.toString()){
+                        black_cell[n].classList.add('active-cell');
+                    }
+                }
+
+            } else {
+                return;
+            }
+        }
+    }
+}
+
+function queenUpRight(x, y, black_cell){
+    for (var i = 0; i <= 8; i++){
+        if (x > 0 && y > 0) {
+            x++;
+            y--;
+            if(!positionChecker(x, y, 'white') && !positionChecker(x, y, 'black')){
+                for (var n = 0; n < black_cell.length; n++){
+                    if (black_cell[n].innerText == x.toString() + y.toString()){
+                        black_cell[n].classList.add('active-cell');
+                    }
+                }
+
+            } else {
+                return;
+            }
+        }
+    }
+}
+
+function queenDownLeft(x, y, black_cell){
+    for (var i = 0; i <= 8; i++){
+        if (x > 0 && y < 7) {
+            x--;
+            y++;
+            if(!positionChecker(x, y, 'white') && !positionChecker(x, y, 'black')){
+                console.log('downleft');
+                console.log(black_cell);
+                for (var n = 0; n < black_cell.length; n++){
+                    if (black_cell[n].innerText == x.toString() + y.toString()){
+                        black_cell[n].classList.add('active-cell');
+                    }
+                }
+
+            } else {
+                return;
+            }
+        }
+    }
+}
+
+function queenDownRight(x, y, black_cell){
+    for (var i = 0; i < 8; i++){
+        if (x < 7 && y < 7) {
+            console.log(x,y);
+            x++;
+            y++;
+            if(!positionChecker(x, y, 'white') && !positionChecker(x, y, 'black')){
+                console.log('downright');
+                for (var n = 0; n < black_cell.length; n++){
+                    if (black_cell[n].innerText == x.toString() + y.toString()){
+                        black_cell[n].classList.add('active-cell');
+                    }
+                }
+
+                console.log(x,y);
+            } else {
+                return;
+            }
+        }
     }
 }
 
@@ -401,16 +530,19 @@ function makingMove(e){
 
         if (kill_checker.length > 0){
             for (var i = 0; i < kill_checker.length; i++){
-                var kill_checker_nr = parseInt(kill_checker[i].innerText);
-                    x_home = home_pos_black[kill_checker_nr].x;
+                var kill_checker_nr = parseInt(kill_checker[i].innerText),
+                    x_home = home_pos_black[kill_checker_nr].x,
                     y_home = home_pos_black[kill_checker_nr].y;
+
                     kill_checker[i].style = `left: calc(12.5% * ${x_home}); top: calc(12.5% * ${y_home}); transition: 1.5s;`;
                     current_pos_black[kill_checker_nr].x = '';
                     current_pos_black[kill_checker_nr].y = '';
             }
         }
-
-
+        //Add queen status
+        if (y == 0) {
+            active_checker.classList.add('white-queen');
+        }
 
         current_pos_white[cheker_number].x = parseInt(x);
         current_pos_white[cheker_number].y = parseInt(y);
@@ -449,6 +581,10 @@ function makingMove(e){
                     current_pos_white[kill_checker_nr].x = '';
                     current_pos_white[kill_checker_nr].y = '';
             }
+        }
+        //Add queen status
+        if (y == 7) {
+            active_checker.classList.add('black-queen');
         }
 
         current_pos_black[cheker_number].x = parseInt(x);

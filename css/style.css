@@ -114,6 +114,10 @@ body * {
         text-align: center;
     }
 
+    .white-queen {
+        background-image: url('../img/white-q.png')
+    }
+
     .black-checker {
         position: absolute;
         height: 12.5%;
@@ -124,6 +128,9 @@ body * {
         background-position: center;
     }
 
+    .black-queen {
+        background-image: url('../img/black-q.png')       
+    }
     .active-checker {
         background-color: rgba(255, 255, 255, 0.2);
     }
@@ -149,6 +156,7 @@ body * {
   background-position: center;
 }
 
+
 .white {
   height: 100%;
   background-repeat: no-repeat;
@@ -156,6 +164,7 @@ body * {
   background-size: cover;
   background-position: center;
 }
+
 
 .row {
   display: inline-block;
