@@ -2,7 +2,7 @@
 
 
 //Board rendering
-document.querySelector('.chess-board').innerHTML = generateBoard(width, height);
+document.querySelector('.chess-board').innerHTML += generateBoard(width, height);
 document.querySelectorAll('.letters')[0].innerHTML = generateLetters(width);
 document.querySelectorAll('.letters')[1].innerHTML = generateLetters(width);
 document.querySelectorAll('.numbers')[0].innerHTML = generateNumbers(height);

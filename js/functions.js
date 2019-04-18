@@ -103,16 +103,37 @@ function generateCheckers(){
 function generateStartPosition(){
     var x = 0,
         y = 0,
+        game_header = document.querySelector('.game-header'),
+        score_white = document.querySelector('.score-white'),
+        score_black = document.querySelector('.score-black'),
+        board = document.querySelector('.game'),
         white_checker = document.querySelectorAll('.white-checker'),
-        black_checker = document.querySelectorAll('.black-checker');
+        black_checker = document.querySelectorAll('.black-checker'),
+        black_cell = document.querySelectorAll('.black');
 
+    // New game RESET
+    current_pos_white = JSON.parse(JSON.stringify(start_pos_white));
+    current_pos_black = JSON.parse(JSON.stringify(start_pos_black));
+    board.classList.remove('reverse');
+    turn_white = true;
+    turn_black = false;
+    score_white.innerText = '0';
+    score_black.innerText = '0';
+    game_header.innerText = 'white move';
+    game_header.style = 'color: #E0E0E0;';
+
+    for (var i = 0; i < white_checker.length; i++) {
+        white_checker[i].classList.remove('active-checker','reverse-checker', 'white-queen');
+        black_checker[i].classList.remove('active-checker','reverse-checker', 'black-queen');
+    }
+    for (var i = 0; i < black_cell.length; i++){
+        black_cell[i].classList.remove('active-cell');
+    }
 
     //WHITE checkers
     for (var i = 0; i < white_checker.length; i++) {
         x = start_pos_white[i].x;
         y = start_pos_white[i].y;
-console.log(i, x, y, ' white');
-console.log("-------------");
         white_checker[i].style = `left: calc(12.5% * ${x}); top: calc(12.5% * ${y}); transition: 0.5s;`;
     }
 
@@ -120,9 +141,6 @@ console.log("-------------");
     for (var i = 0; i < black_checker.length; i++) {
         x = start_pos_black[i].x;
         y = start_pos_black[i].y;
-        console.log(i, x, y, ' black');
-        console.log("-------------");
-
         black_checker[i].style = `left: calc(12.5% * ${x}); top: calc(12.5% * ${y}); transition: 0.5s;`;
     }
 
@@ -176,63 +194,70 @@ function moveSelector(e){
         ///////////////////////
         if (active_checker.classList.contains('white-queen')){
             //Queen up and left
-            queenUpLeft(current_x, current_y, black_cell);
+            queenUpLeft(current_x, current_y, black_cell, 'white');
 
             //Queen up and right
-            queenUpRight(current_x, current_y, black_cell);
+            queenUpRight(current_x, current_y, black_cell, 'white');
 
             //Queen down and left
-            queenDownLeft(current_x, current_y, black_cell);
+            queenDownLeft(current_x, current_y, black_cell, 'white');
 
             //Queen down and right
-            queenDownRight(current_x, current_y, black_cell);
+            queenDownRight(current_x, current_y, black_cell, 'white');
 
-        }
-
-
-
-        //Available moves to the left
-        new_x = current_x - 1;
-        new_y = current_y - 1;
-        coords = new_x.toString() + new_y.toString();
-
-        if (!positionChecker(new_x, new_y, 'white') && !positionChecker(new_x, new_y, 'black')){
-            for (var i = 0; i < black_cell.length; i++){
-                if (black_cell[i].innerText == coords) {
-                    black_cell[i].classList.add('active-cell')
-                }
-            }
-        }
-
-        //Available moves to the right
-        new_x = current_x + 1;
-        new_y = current_y - 1;
-        coords = new_x.toString() + new_y.toString();
-
-        if (!positionChecker(new_x, new_y, 'white') && !positionChecker(new_x, new_y, 'black')){
-            for (var i = 0; i < black_cell.length; i++){
-                if (black_cell[i].innerText == coords) {
-                    black_cell[i].classList.add('active-cell')
-                }
-            }
-        }
-
-
-        // //Available kills
-        if (killAllowedBlack(current_x, current_y)) {
-            console.log(kill_object);
-
-            for (var i = 0; i < black_cell.length; i++){
-                for (var n = 0; n < kill_object.length; n++){
-                    if (black_cell[i].innerText == kill_object[n].move_to_coords){
-                        black_cell[i].classList.add('active-cell');
-                    }
-                }
-            }
             for (var i = 0; i < current_pos_black.length; i++){
                 for (var n = 0; n < kill_object.length; n++){
                     if ( current_pos_black[i].x == kill_object[n].x && current_pos_black[i].y == kill_object[n].y){
                         black_checker[i].classList.add('kill-checker');
+                    }
+                }
+            }
+
+        }
+
+        if (!active_checker.classList.contains('white-queen')){
+
+            // //Available kills
+            if (killAllowedBlack(current_x, current_y)) {
+                for (var i = 0; i < black_cell.length; i++){
+                    if (black_cell[i].innerText == kill_object[kill_object.length - 1].move_to_coords){
+                        black_cell[i].classList.add('active-cell');
+                    }
+                }
+                for (var i = 0; i < current_pos_black.length; i++){
+                    for (var n = 0; n < kill_object.length; n++){
+                        if ( current_pos_black[i].x == kill_object[n].x && current_pos_black[i].y == kill_object[n].y){
+                            black_checker[i].classList.add('kill-checker');
+                        }
+                    }
+                }
+            }
+
+            //Available moves to the left
+            new_x = current_x - 1;
+            new_y = current_y - 1;
+            coords = new_x.toString() + new_y.toString();
+
+            if (!positionChecker(new_x, new_y, 'white') &&
+            !positionChecker(new_x, new_y, 'black') &&
+            kill_object.length == 0){
+                for (var i = 0; i < black_cell.length; i++){
+                    if (black_cell[i].innerText == coords) {
+                        black_cell[i].classList.add('active-cell')
+                    }
+                }
+            }
+
+            //Available moves to the right
+            new_x = current_x + 1;
+            new_y = current_y - 1;
+            coords = new_x.toString() + new_y.toString();
+
+            if (!positionChecker(new_x, new_y, 'white') && !positionChecker(new_x, new_y, 'black') &&
+            kill_object.length == 0){
+                for (var i = 0; i < black_cell.length; i++){
+                    if (black_cell[i].innerText == coords) {
+                        black_cell[i].classList.add('active-cell')
                     }
                 }
             }
@@ -272,55 +297,17 @@ function moveSelector(e){
         ///////////////////////
         if (active_checker.classList.contains('black-queen')){
             //Queen up and left
-            queenUpLeft(current_x, current_y, black_cell);
+            queenUpLeft(current_x, current_y, black_cell, 'black');
 
             //Queen up and right
-            queenUpRight(current_x, current_y, black_cell);
+            queenUpRight(current_x, current_y, black_cell, 'black');
 
             //Queen down and left
-            queenDownLeft(current_x, current_y, black_cell);
+            queenDownLeft(current_x, current_y, black_cell, 'black');
 
             //Queen down and right
-            queenDownRight(current_x, current_y, black_cell);
+            queenDownRight(current_x, current_y, black_cell, 'black');
 
-        }
-
-        //Available moves to the left
-        new_x = current_x - 1;
-        new_y = current_y + 1;
-        coords = new_x.toString() + new_y.toString();
-
-        if (!positionChecker(new_x, new_y, 'white') && !positionChecker(new_x, new_y, 'black')){
-            for (var i = 0; i < black_cell.length; i++){
-                if (black_cell[i].innerText == coords) {
-                    black_cell[i].classList.add('active-cell')
-                }
-            }
-        }
-
-        //Available moves to the right
-        new_x = current_x + 1;
-        new_y = current_y + 1;
-        coords = new_x.toString() + new_y.toString();
-
-        if (!positionChecker(new_x, new_y, 'white') && !positionChecker(new_x, new_y, 'black')){
-            for (var i = 0; i < black_cell.length; i++){
-                if (black_cell[i].innerText == coords) {
-                    black_cell[i].classList.add('active-cell')
-                }
-            }
-        }
-
-        //Available kills
-        if (killAllowedWhite(current_x, current_y)) {
-            console.log(kill_object);
-            for (var i = 0; i < black_cell.length; i++){
-                for (var n = 0; n < kill_object.length; n++){
-                    if (black_cell[i].innerText == kill_object[n].move_to_coords){
-                        black_cell[i].classList.add('active-cell');
-                    }
-                }
-            }
             for (var i = 0; i < current_pos_white.length; i++){
                 for (var n = 0; n < kill_object.length; n++){
                     if ( current_pos_white[i].x == kill_object[n].x && current_pos_white[i].y == kill_object[n].y){
@@ -328,6 +315,61 @@ function moveSelector(e){
                     }
                 }
             }
+
+        }
+
+        if (!active_checker.classList.contains('black-queen')){
+            //Available kills
+            if (killAllowedWhite(current_x, current_y)) {
+                console.log(kill_object);
+                for (var i = 0; i < black_cell.length; i++){
+                    if (black_cell[i].innerText == kill_object[kill_object.length - 1].move_to_coords){
+                        black_cell[i].classList.add('active-cell');
+                    }
+                    // if (black_cell[i].innerText == kill_object[kill_object.length - 1].move_to_coords &&
+                        //     kill_object[kill_object.length - 1].y == kill_object[kill_object.length - 2].y){
+                            //     black_cell[i].classList.add('active-cell');
+                            // }
+                        }
+                        for (var i = 0; i < current_pos_white.length; i++){
+                            for (var n = 0; n < kill_object.length; n++){
+                                if ( current_pos_white[i].x == kill_object[n].x && current_pos_white[i].y == kill_object[n].y){
+                                    white_checker[i].classList.add('kill-checker');
+                                }
+                            }
+                        }
+                    }
+
+                    //Available moves to the left
+                    new_x = current_x - 1;
+                    new_y = current_y + 1;
+                    coords = new_x.toString() + new_y.toString();
+
+                    if (!positionChecker(new_x, new_y, 'white') &&
+                    !positionChecker(new_x, new_y, 'black') &&
+                    kill_object.length == 0){
+                        for (var i = 0; i < black_cell.length; i++){
+                            if (black_cell[i].innerText == coords) {
+                                black_cell[i].classList.add('active-cell')
+                            }
+                        }
+                    }
+
+                    //Available moves to the right
+                    new_x = current_x + 1;
+                    new_y = current_y + 1;
+                    coords = new_x.toString() + new_y.toString();
+
+                    if (!positionChecker(new_x, new_y, 'white') &&
+                    !positionChecker(new_x, new_y, 'black') &&
+                    kill_object.length == 0){
+                        for (var i = 0; i < black_cell.length; i++){
+                            if (black_cell[i].innerText == coords) {
+                                black_cell[i].classList.add('active-cell')
+                            }
+                        }
+                    }
+
         }
 
     }
@@ -351,10 +393,10 @@ function positionChecker(x, y, team_color){
         return false;
     }
 }
-////////////////////////////////////
-//Functions for queen positions
-///////////////////////////////////
-function queenUpLeft(x, y, black_cell){
+//////////////////////////////////////////
+//Functions for queen positions and kills
+//////////////////////////////////////////
+function queenUpLeft(x, y, black_cell, team){
     for (var i = 0; i <= 8; i++){
         if (x > 0 && y > 0) {
             x--;
@@ -366,14 +408,49 @@ function queenUpLeft(x, y, black_cell){
                     }
                 }
 
-            } else {
+            }
+            if (positionChecker(x, y, 'black') &&
+             team === 'white' &&
+             !positionChecker(x - 1, y - 1, 'white') &&
+             !positionChecker(x - 1, y - 1, 'black')) {
+                 kill_object.push(
+                 {
+                     x: x,
+                     y: y,
+                     move_to_coords: (x - 2).toString() + (y - 2).toString()
+                 });
+            }
+            if (positionChecker(x, y, 'white') &&
+             team === 'black' &&
+             !positionChecker(x - 1, y - 1, 'white') &&
+             !positionChecker(x - 1, y - 1, 'black')) {
+                 kill_object.push(
+                 {
+                     x: x,
+                     y: y,
+                     move_to_coords: (x - 2).toString() + (y - 2).toString()
+                 });
+            }
+            if (positionChecker(x, y, 'white') &&
+             team === 'white') {
                 return;
             }
+            if (positionChecker(x, y, 'black') &&
+            team === 'black') {
+                return;
+            }
+            if(positionChecker(x, y, 'white') && positionChecker(x - 1, y - 1, 'white')) {
+                return;
+            }
+            if(positionChecker(x, y, 'black') && positionChecker(x - 1, y - 1, 'black')) {
+                return;
+            }
+
         }
     }
 }
 
-function queenUpRight(x, y, black_cell){
+function queenUpRight(x, y, black_cell, team){
     for (var i = 0; i <= 8; i++){
         if (x > 0 && y > 0) {
             x++;
@@ -385,14 +462,48 @@ function queenUpRight(x, y, black_cell){
                     }
                 }
 
-            } else {
+            }
+            if (positionChecker(x, y, 'black') &&
+             team === 'white' &&
+             !positionChecker(x + 2, y - 2, 'white') &&
+             !positionChecker(x + 2, y - 2, 'black')) {
+                 kill_object.push(
+                 {
+                     x: x,
+                     y: y,
+                     move_to_coords: (x + 2).toString() + (y - 2).toString()
+                 });
+            }
+            if (positionChecker(x, y, 'white') &&
+             team === 'black' &&
+             !positionChecker(x + 2, y - 2, 'white') &&
+             !positionChecker(x + 2, y - 2, 'black')) {
+                 kill_object.push(
+                 {
+                     x: x,
+                     y: y,
+                     move_to_coords: (x + 2).toString() + (y - 2).toString()
+                 });
+            }
+            if (positionChecker(x, y, 'white') &&
+             team === 'white') {
+                return;
+            }
+            if (positionChecker(x, y, 'black') &&
+            team === 'black') {
+                return;
+            }
+            if(positionChecker(x, y, 'white') && positionChecker(x + 2, y - 2, 'white')) {
+                return;
+            }
+            if(positionChecker(x, y, 'black') && positionChecker(x + 2, y - 2, 'black')) {
                 return;
             }
         }
     }
 }
 
-function queenDownLeft(x, y, black_cell){
+function queenDownLeft(x, y, black_cell, team){
     for (var i = 0; i <= 8; i++){
         if (x > 0 && y < 7) {
             x--;
@@ -406,14 +517,48 @@ function queenDownLeft(x, y, black_cell){
                     }
                 }
 
-            } else {
+            }
+            if (positionChecker(x, y, 'black') &&
+             team === 'white' &&
+             !positionChecker(x - 2, y + 2, 'white') &&
+             !positionChecker(x - 2, y + 2, 'black')) {
+                 kill_object.push(
+                 {
+                     x: x,
+                     y: y,
+                     move_to_coords: (x - 2).toString() + (y + 2).toString()
+                 });
+            }
+            if (positionChecker(x, y, 'white') &&
+             team === 'black' &&
+             !positionChecker(x - 2, y + 2, 'white') &&
+             !positionChecker(x - 2, y + 2, 'black')) {
+                 kill_object.push(
+                 {
+                     x: x,
+                     y: y,
+                     move_to_coords: (x - 2).toString() + (y + 2).toString()
+                 });
+            }
+            if (positionChecker(x, y, 'white') &&
+             team === 'white') {
+                return;
+            }
+            if (positionChecker(x, y, 'black') &&
+            team === 'black') {
+                return;
+            }
+            if(positionChecker(x, y, 'white') && positionChecker(x - 2, y + 2, 'white')) {
+                return;
+            }
+            if(positionChecker(x, y, 'black') && positionChecker(x - 2, y + 2, 'black')) {
                 return;
             }
         }
     }
 }
 
-function queenDownRight(x, y, black_cell){
+function queenDownRight(x, y, black_cell, team){
     for (var i = 0; i < 8; i++){
         if (x < 7 && y < 7) {
             console.log(x,y);
@@ -428,7 +573,41 @@ function queenDownRight(x, y, black_cell){
                 }
 
                 console.log(x,y);
-            } else {
+            }
+            if (positionChecker(x, y, 'black') &&
+             team === 'white' &&
+             !positionChecker(x + 2, y + 2, 'white') &&
+             !positionChecker(x + 2, y + 2, 'black')) {
+                 kill_object.push(
+                 {
+                     x: x,
+                     y: y,
+                     move_to_coords: (x + 2).toString() + (y + 2).toString()
+                 });
+            }
+            if (positionChecker(x, y, 'white') &&
+             team === 'black' &&
+             !positionChecker(x + 2, y + 2, 'white') &&
+             !positionChecker(x + 2, y + 2, 'black')) {
+                 kill_object.push(
+                 {
+                     x: x,
+                     y: y,
+                     move_to_coords: (x + 2).toString() + (y + 2).toString()
+                 });
+            }
+            if (positionChecker(x, y, 'white') &&
+             team === 'white') {
+                return;
+            }
+            if (positionChecker(x, y, 'black') &&
+            team === 'black') {
+                return;
+            }
+            if(positionChecker(x, y, 'white') && positionChecker(x + 2, y + 2, 'white')) {
+                return;
+            }
+            if(positionChecker(x, y, 'black') && positionChecker(x + 2, y + 2, 'black')) {
                 return;
             }
         }
@@ -520,6 +699,9 @@ function makingMove(e){
         black_checker = document.querySelectorAll('.black-checker'),
         kill_checker = document.querySelectorAll('.kill-checker'),
         cell = document.querySelectorAll('.cell'),
+        score_white = document.querySelector('.score-white'),
+        score_black = document.querySelector('.score-black'),
+        game_header = document.querySelector('.game-header'),
         cheker_number = active_checker.innerText;
 
 
@@ -534,9 +716,12 @@ function makingMove(e){
                     x_home = home_pos_black[kill_checker_nr].x,
                     y_home = home_pos_black[kill_checker_nr].y;
 
-                    kill_checker[i].style = `left: calc(12.5% * ${x_home}); top: calc(12.5% * ${y_home}); transition: 1.5s;`;
-                    current_pos_black[kill_checker_nr].x = '';
-                    current_pos_black[kill_checker_nr].y = '';
+                kill_checker[i].style = `left: calc(12.5% * ${x_home}); top: calc(12.5% * ${y_home}); transition: 1.5s;`;
+                current_pos_black[kill_checker_nr].x = '';
+                current_pos_black[kill_checker_nr].y = '';
+
+                // score counting and showing
+                score_white.innerText = parseInt(score_white.innerText) + 1;
             }
         }
         //Add queen status
@@ -565,6 +750,9 @@ function makingMove(e){
         }
 
         document.querySelector('.game').classList.add('reverse')
+
+        game_header.innerText = 'Black move';
+        game_header.style = 'color: #101010;'
     }
 
     //New position of the checker - Team BLACK
@@ -574,12 +762,16 @@ function makingMove(e){
 
         if (kill_checker.length > 0){
             for (var i = 0; i < kill_checker.length; i++){
-                var kill_checker_nr = parseInt(kill_checker[i].innerText);
-                    x_home = home_pos_white[kill_checker_nr].x;
+                var kill_checker_nr = parseInt(kill_checker[i].innerText),
+                    x_home = home_pos_white[kill_checker_nr].x,
                     y_home = home_pos_white[kill_checker_nr].y;
-                    kill_checker[i].style = `left: calc(12.5% * ${x_home}); top: calc(12.5% * ${y_home}); transition: 1.5s;`;
-                    current_pos_white[kill_checker_nr].x = '';
-                    current_pos_white[kill_checker_nr].y = '';
+
+                kill_checker[i].style = `left: calc(12.5% * ${x_home}); top: calc(12.5% * ${y_home}); transition: 1.5s;`;
+                current_pos_white[kill_checker_nr].x = '';
+                current_pos_white[kill_checker_nr].y = '';
+
+                // score counting and showing
+                score_black.innerText = parseInt(score_black.innerText) + 1;
             }
         }
         //Add queen status
@@ -608,6 +800,9 @@ function makingMove(e){
         }
 
         document.querySelector('.game').classList.remove('reverse')
+
+        game_header.innerText = 'white move';
+        game_header.style = 'color: #E0E0E0;'
     }
 
 }
