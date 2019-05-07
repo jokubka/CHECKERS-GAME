@@ -161,6 +161,7 @@ function moveSelector(e){
         black_cell = document.querySelectorAll('.black'),
         checker_number = e.target.innerText;
 
+
      ////////////////////////////
     //Team WHITE available moves
     /////////////////////////////
@@ -752,7 +753,7 @@ function makingMove(e){
         document.querySelector('.game').classList.add('reverse')
 
         game_header.innerText = 'Black move';
-        game_header.style = 'color: #101010;'
+        game_header.style = 'color: #101010;';
     }
 
     //New position of the checker - Team BLACK
@@ -793,16 +794,32 @@ function makingMove(e){
         }
 
         for (var i = 0; i < white_checker.length; i++){
-            white_checker[i].classList.remove('reverse-checker')
+            white_checker[i].classList.remove('reverse-checker');
         }
         for (var i = 0; i < black_checker.length; i++){
-            black_checker[i].classList.remove('reverse-checker')
+            black_checker[i].classList.remove('reverse-checker');
         }
 
-        document.querySelector('.game').classList.remove('reverse')
+        document.querySelector('.game').classList.remove('reverse');
 
         game_header.innerText = 'white move';
-        game_header.style = 'color: #E0E0E0;'
+        game_header.style = 'color: #E0E0E0;';
+    }
+
+    // END OF GAME, CHECKING FOR WINNER
+
+    console.log(score_white.innerText);
+    if (score_white.innerText == '12') {
+        turn_black = false;
+        turn_white = false;
+        game_header.innerText = 'white wins!';
+        game_header.style = 'color: #E0E0E0';
+    }
+    if (score_black.innerText == '12') {
+        turn_black = false;
+        turn_white = false;
+        game_header.innerText = 'black wins!';
+        game_header.style = 'color: #101010;';
     }
 
 }
